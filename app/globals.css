@@ -41,3 +41,33 @@ button,
 input {
   font: inherit;
 }
+
+@keyframes twinkleSlow {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes twinkleFast {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.stars-far {
+  animation: twinkleSlow 7s linear infinite;
+}
+
+.stars-near {
+  animation: twinkleFast 4.8s linear infinite;
+}
