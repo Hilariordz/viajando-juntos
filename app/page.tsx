@@ -44,10 +44,82 @@ export default function Home() {
 				</header>
 
 				<nav
-					className="grid min-h-24 grid-cols-1 items-center gap-3 border-b border-[var(--line)] bg-white px-3 py-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-3 sm:px-6 sm:py-0"
+					className="sticky top-0 z-[90] flex min-h-20 items-center justify-between border-b border-[var(--line)] bg-white px-3 py-3 sm:hidden"
+					aria-label="Navegacion principal movil"
+				>
+					<a
+						className="grid justify-items-start gap-1 leading-none"
+						href="#"
+						aria-label="Viajando Juntos home"
+					>
+						<span
+							className="font-[var(--font-playfair)] text-[12px] tracking-[0.2em] text-[var(--primary)]"
+							aria-hidden
+						>
+							+ +
+						</span>
+						<span className="text-[16px] font-extrabold tracking-[0.12em]">VIAJANDO JUNTOS</span>
+					</a>
+
+					<details className="group relative">
+						<summary className="relative z-[70] flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-md border border-[rgba(17,17,17,0.2)] bg-[#f7f7f7] text-[#1f1f1f] [&::-webkit-details-marker]:hidden group-open:fixed group-open:right-3 group-open:top-3 group-open:z-[80]">
+							<span className="sr-only">Abrir menu</span>
+							<span className="text-xl leading-none">≡</span>
+						</summary>
+						<div className="fixed inset-0 z-[60] overscroll-none">
+							<div className="absolute inset-0 bg-black/35 touch-none" />
+							<div className="absolute right-0 top-0 h-screen w-[80vw] overflow-y-auto border-l border-[rgba(17,17,17,0.14)] bg-white p-4 shadow-[0_18px_40px_rgba(17,17,17,0.2)]">
+								<div className="mb-3 border-b border-[rgba(17,17,17,0.1)] pb-3">
+									<p className="m-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4a4a4a]">
+										Menu
+									</p>
+								</div>
+								<ul className="m-0 grid list-none gap-1 p-0 text-[11px] font-bold uppercase tracking-[0.1em] text-[#2c2b2a]">
+								{leftMenu.map((item) => (
+									<li key={`m-left-${item}`}>
+										<a
+											href="#"
+											className="block rounded-lg px-3 py-2 transition-colors hover:bg-[#f4f4f4]"
+										>
+											{item}
+										</a>
+									</li>
+								))}
+								{rightMenu.map((item) => (
+									<li key={`m-right-${item}`}>
+										<a
+											href="#"
+											className="block rounded-lg px-3 py-2 transition-colors hover:bg-[#f4f4f4]"
+										>
+											{item}
+										</a>
+									</li>
+								))}
+								</ul>
+								<div className="mt-3 grid gap-2 border-t border-[rgba(17,17,17,0.1)] pt-3">
+									<a
+										href="#"
+										className="inline-flex min-h-9 items-center justify-center rounded-full border border-[rgba(17,17,17,0.24)] bg-[#f3f3f3] px-4 text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#1f1f1f]"
+									>
+										Iniciar sesion
+									</a>
+									<a
+										href="#"
+										className="inline-flex min-h-9 items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--accent)] px-4 text-[11px] font-extrabold uppercase tracking-[0.08em] text-white"
+									>
+										Registro
+									</a>
+								</div>
+							</div>
+						</div>
+					</details>
+				</nav>
+
+				<nav
+					className="sticky top-0 z-50 hidden min-h-24 grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-[var(--line)] bg-white px-6 py-0 sm:grid"
 					aria-label="Navegacion principal"
 				>
-					<ul className="flex list-none flex-wrap items-center justify-center gap-3 p-0 text-[10px] font-bold uppercase tracking-[0.1em] text-[#2c2b2a] sm:justify-start sm:gap-5 sm:text-[11px]">
+					<ul className="flex list-none flex-wrap items-center justify-start gap-5 p-0 text-[11px] font-bold uppercase tracking-[0.1em] text-[#2c2b2a]">
 						{leftMenu.map((item) => (
 							<li key={item}>
 								<a href="#" className="transition-opacity hover:opacity-75">
@@ -68,12 +140,12 @@ export default function Home() {
 						>
 							+ +
 						</span>
-						<span className="text-[22px] font-extrabold tracking-[0.18em] sm:text-[27px] sm:tracking-[0.28em]">
+						<span className="text-[27px] font-extrabold tracking-[0.28em]">
 							VIAJANDO JUNTOS
 						</span>
 					</a>
 
-					<ul className="flex list-none flex-wrap items-center justify-center gap-3 p-0 text-[10px] font-bold uppercase tracking-[0.1em] text-[#2c2b2a] sm:justify-end sm:gap-5 sm:text-[11px]">
+					<ul className="flex list-none flex-wrap items-center justify-end gap-5 p-0 text-[11px] font-bold uppercase tracking-[0.1em] text-[#2c2b2a]">
 						{rightMenu.map((item) => (
 							<li key={item}>
 								<a href="#" className="transition-opacity hover:opacity-75">
@@ -81,7 +153,7 @@ export default function Home() {
 								</a>
 							</li>
 						))}
-						<li className="ml-0 inline-flex w-full items-center justify-center gap-2 sm:ml-2 sm:w-auto">
+						<li className="ml-2 inline-flex items-center justify-center gap-2">
 							<a
 								href="#"
 								className="inline-flex min-h-9 items-center justify-center overflow-hidden rounded-full border border-[rgba(17,17,17,0.24)] bg-[#f3f3f3] px-4 text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#1f1f1f] transition hover:-translate-y-px hover:bg-white hover:shadow-[0_10px_20px_rgba(28,24,18,0.16)]"
@@ -105,12 +177,12 @@ export default function Home() {
 					<div className="mx-auto inline-flex rounded-full border border-[rgba(255,111,97,0.56)] bg-[rgba(255,111,97,0.26)] px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#fdfaf5]">
 						Coleccion 2026
 					</div>
-					<div className="mx-auto mt-12 max-w-[900px] text-center text-white sm:mt-[clamp(48px,10vh,114px)]">
-						<h1 className="m-0 grid font-[var(--font-caveat)] text-[clamp(52px,8.6vw,132px)] leading-[0.86] uppercase [text-shadow:0_14px_28px_rgba(0,0,0,0.33)]">
+					<div className="mx-auto mt-8 max-w-[900px] text-center text-white sm:mt-[clamp(48px,10vh,114px)]">
+						<h1 className="m-0 grid font-[var(--font-caveat)] text-[clamp(40px,8.2vw,132px)] leading-[0.86] uppercase [text-shadow:0_14px_28px_rgba(0,0,0,0.33)]">
 							<span>Vacaciones</span>
 							<span>Extraordinarias</span>
 						</h1>
-						<p className="mx-auto mt-4 max-w-[700px] font-[var(--font-playfair)] text-[clamp(24px,2.2vw,38px)] text-[rgba(255,255,255,0.92)]">
+						<p className="mx-auto mt-3 max-w-[700px] font-[var(--font-playfair)] text-[clamp(18px,2vw,38px)] text-[rgba(255,255,255,0.92)]">
 							Disenamos viajes elegantes con experiencias memorables.
 						</p>
 						<div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
@@ -130,23 +202,23 @@ export default function Home() {
 					</div>
 
 					<div
-						className="mt-6 grid grid-cols-1 gap-3 sm:absolute sm:bottom-6 sm:left-6 sm:right-6 sm:grid-cols-3"
+						className="mt-5 grid grid-cols-1 gap-2 sm:absolute sm:bottom-6 sm:left-6 sm:right-6 sm:grid-cols-3 sm:gap-3"
 						aria-label="Indicadores de servicio"
 					>
-						<article className="rounded-[18px] border border-[rgba(255,255,255,0.24)] bg-[rgba(255,255,255,0.16)] px-4 py-3.5 text-[#f8f4ed] backdrop-blur">
-							<strong className="block text-[28px] leading-none">12+</strong>
+						<article className="rounded-[18px] border border-[rgba(255,255,255,0.24)] bg-[rgba(255,255,255,0.16)] px-3 py-3 text-[#f8f4ed] backdrop-blur sm:px-4 sm:py-3.5">
+							<strong className="block text-[23px] leading-none sm:text-[28px]">12+</strong>
 							<span className="mt-1.5 block text-[13px] text-[rgba(255,251,244,0.86)]">
 								Anios creando escapadas premium
 							</span>
 						</article>
-						<article className="rounded-[18px] border border-[rgba(255,255,255,0.24)] bg-[rgba(255,255,255,0.16)] px-4 py-3.5 text-[#f8f4ed] backdrop-blur">
-							<strong className="block text-[28px] leading-none">4.9/5</strong>
+						<article className="rounded-[18px] border border-[rgba(255,255,255,0.24)] bg-[rgba(255,255,255,0.16)] px-3 py-3 text-[#f8f4ed] backdrop-blur sm:px-4 sm:py-3.5">
+							<strong className="block text-[23px] leading-none sm:text-[28px]">4.9/5</strong>
 							<span className="mt-1.5 block text-[13px] text-[rgba(255,251,244,0.86)]">
 								Satisfaccion promedio de viajeros
 							</span>
 						</article>
-						<article className="rounded-[18px] border border-[rgba(255,255,255,0.24)] bg-[rgba(255,255,255,0.16)] px-4 py-3.5 text-[#f8f4ed] backdrop-blur">
-							<strong className="block text-[28px] leading-none">40</strong>
+						<article className="rounded-[18px] border border-[rgba(255,255,255,0.24)] bg-[rgba(255,255,255,0.16)] px-3 py-3 text-[#f8f4ed] backdrop-blur sm:px-4 sm:py-3.5">
+							<strong className="block text-[23px] leading-none sm:text-[28px]">40</strong>
 							<span className="mt-1.5 block text-[13px] text-[rgba(255,251,244,0.86)]">
 								Destinos internacionales curados
 							</span>
@@ -171,7 +243,7 @@ export default function Home() {
 								key={destination.name}
 							>
 								<div
-									className="min-h-[280px] bg-cover bg-center"
+									className="min-h-[220px] bg-cover bg-center sm:min-h-[250px] lg:min-h-[280px]"
 									style={{ backgroundImage: `url(${destination.image})` }}
 								/>
 								<div className="p-[18px]">
@@ -204,7 +276,7 @@ export default function Home() {
 						<p className="m-0 text-[11px] font-bold uppercase tracking-[0.3em] text-[var(--secondary)]">
 							Planificacion concierge
 						</p>
-						<h2 className="mt-4 font-[var(--font-playfair)] text-[clamp(34px,4vw,56px)] leading-[0.98]">
+						<h2 className="mt-4 font-[var(--font-playfair)] text-[clamp(28px,4vw,56px)] leading-[0.98]">
 							Construyamos tus vacaciones ideales
 						</h2>
 						<p className="mt-3.5 max-w-[580px] leading-[1.8] text-[#2a6956]">
@@ -255,7 +327,7 @@ export default function Home() {
 							<p className="m-0 text-[11px] font-bold uppercase tracking-[0.3em] text-white">
 								Viajando Juntos
 							</p>
-							<h3 className="mt-4 max-w-[370px] font-[var(--font-playfair)] text-[clamp(30px,3.1vw,42px)] leading-[1.02]">
+							<h3 className="mt-4 max-w-[370px] font-[var(--font-playfair)] text-[clamp(24px,3.1vw,42px)] leading-[1.02]">
 								Viajes de vacaciones con diseno premium y atencion humana.
 							</h3>
 						</div>
