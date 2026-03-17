@@ -1,3 +1,43 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+	Plane, 
+	ShieldCheck, 
+	Star, 
+	Map, 
+	Phone, 
+	ArrowRight, 
+	Calendar, 
+	Instagram, 
+	Facebook, 
+	Twitter,
+	Menu,
+	X,
+	CheckCircle2
+} from "lucide-react";
+
+function Counter({ end, duration = 2000, decimals = 0 }: { end: number; duration?: number; decimals?: number }) {
+	const [count, setCount] = useState(0);
+
+	useEffect(() => {
+		let startTime: number | null = null;
+		const step = (timestamp: number) => {
+			if (!startTime) startTime = timestamp;
+			const progress = Math.min((timestamp - startTime) / duration, 1);
+			setCount(progress * end);
+			if (progress < 1) {
+				window.requestAnimationFrame(step);
+			}
+		};
+		window.requestAnimationFrame(step);
+	}, [end, duration]);
+
+	return <span>{count.toFixed(decimals)}</span>;
+}
+
 const leftMenu = ["Inicio", "Destinos", "Paquetes"];
 const rightMenu = ["Galeria", "Contacto"];
 
@@ -29,362 +69,493 @@ const destinationCards = [
 ];
 
 export default function Home() {
+	const [isScrolled, setIsScrolled] = useState(false);
+	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+	useEffect(() => {
+		const handleScroll = () => {
+			setIsScrolled(window.scrollY > 20);
+		};
+		window.addEventListener("scroll", handleScroll);
+		return () => window.removeEventListener("scroll", handleScroll);
+	}, []);
+
 	return (
 		<main className="min-h-screen">
 			<div className="w-full">
-				<header className="grid min-h-11 grid-cols-1 items-center gap-2 bg-[var(--secondary)] px-3 py-2 text-center text-[11px] uppercase tracking-[0.05em] text-white sm:grid-cols-[1fr_auto_1fr] sm:gap-3 sm:px-6 sm:py-0 sm:text-[12px]">
-					<p>+52 55 4088 9900</p>
-					<p className="sm:justify-self-center">Asesoria personalizada para escapadas de lujo</p>
+				<header className="grid min-h-10 grid-cols-1 items-center gap-2 bg-[#0a192f] px-3 py-2 text-center text-[10px] uppercase tracking-[0.1em] text-white/90 sm:grid-cols-[1fr_auto_1fr] sm:gap-3 sm:px-6 sm:py-0 sm:text-[11px]">
+					<p className="flex items-center justify-center gap-2 sm:justify-start">
+						<Phone size={12} className="text-[var(--accent)]" />
+						844 1234567
+					</p>
+					<p className="hidden sm:block">Asesoría personalizada para vacaciones de lujo</p>
 					<a
 						href="#reserva"
-						className="font-bold transition-opacity hover:opacity-80 sm:justify-self-end"
+						className="flex items-center justify-center gap-1 font-bold text-[var(--accent)] transition-opacity hover:opacity-80 sm:justify-end"
 					>
-						Reserva tu viaje
+						Reserva tu viaje <ArrowRight size={12} />
 					</a>
 				</header>
 
 				<nav
-					className="sticky top-0 z-[90] flex min-h-20 items-center justify-between border-b border-[var(--line)] bg-white px-3 py-3 sm:hidden"
-					aria-label="Navegacion principal movil"
+					className={`sticky top-0 z-50 flex h-20 items-center justify-between border-b transition-all duration-300 px-6 sm:px-12 ${
+						isScrolled 
+						? "border-[var(--line)] bg-white/80 backdrop-blur-lg py-3 h-16 shadow-sm" 
+						: "border-transparent bg-white py-5 h-20"
+					}`}
+					aria-label="Navegación principal"
 				>
+					<div className="flex items-center gap-8">
+						<ul className="hidden list-none items-center gap-6 p-0 text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--secondary)] lg:flex">
+							{leftMenu.map((item) => (
+								<li key={item}>
+									<a href="#" className="relative group overflow-hidden py-1">
+										{item}
+										<span className="absolute bottom-0 left-0 h-[1.5px] w-full origin-left scale-x-0 bg-[var(--primary)] transition-transform duration-300 group-hover:scale-x-100" />
+									</a>
+								</li>
+							))}
+						</ul>
+					</div>
+
 					<a
-						className="grid justify-items-start gap-1 leading-none"
+						className="flex flex-col items-center leading-none"
 						href="#"
 						aria-label="Viajando Juntos home"
 					>
-						<span
-							className="font-[var(--font-playfair)] text-[12px] tracking-[0.2em] text-[var(--primary)]"
-							aria-hidden
-						>
-							+ +
-						</span>
-						<span className="text-[16px] font-extrabold tracking-[0.12em]">VIAJANDO JUNTOS</span>
-					</a>
-
-					<details className="group relative">
-						<summary className="relative z-[70] flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-md border border-[rgba(17,17,17,0.2)] bg-[#f7f7f7] text-[#1f1f1f] [&::-webkit-details-marker]:hidden group-open:fixed group-open:right-3 group-open:top-3 group-open:z-[80]">
-							<span className="sr-only">Abrir menu</span>
-							<span className="text-xl leading-none">≡</span>
-						</summary>
-						<div className="fixed inset-0 z-[60] overscroll-none">
-							<div className="absolute inset-0 bg-black/35 touch-none" />
-							<div className="absolute right-0 top-0 h-screen w-[80vw] overflow-y-auto border-l border-[rgba(17,17,17,0.14)] bg-white p-4 shadow-[0_18px_40px_rgba(17,17,17,0.2)]">
-								<div className="mb-3 border-b border-[rgba(17,17,17,0.1)] pb-3">
-									<p className="m-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4a4a4a]">
-										Menu
-									</p>
-								</div>
-								<ul className="m-0 grid list-none gap-1 p-0 text-[11px] font-bold uppercase tracking-[0.1em] text-[#2c2b2a]">
-								{leftMenu.map((item) => (
-									<li key={`m-left-${item}`}>
-										<a
-											href="#"
-											className="block rounded-lg px-3 py-2 transition-colors hover:bg-[#f4f4f4]"
-										>
-											{item}
-										</a>
-									</li>
-								))}
-								{rightMenu.map((item) => (
-									<li key={`m-right-${item}`}>
-										<a
-											href="#"
-											className="block rounded-lg px-3 py-2 transition-colors hover:bg-[#f4f4f4]"
-										>
-											{item}
-										</a>
-									</li>
-								))}
-								</ul>
-								<div className="mt-3 grid gap-2 border-t border-[rgba(17,17,17,0.1)] pt-3">
-									<a
-										href="#"
-										className="inline-flex min-h-9 items-center justify-center rounded-full border border-[rgba(17,17,17,0.24)] bg-[#f3f3f3] px-4 text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#1f1f1f]"
-									>
-										Iniciar sesion
-									</a>
-									<a
-										href="#"
-										className="inline-flex min-h-9 items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--accent)] px-4 text-[11px] font-extrabold uppercase tracking-[0.08em] text-white"
-									>
-										Registro
-									</a>
-								</div>
-							</div>
-						</div>
-					</details>
-				</nav>
-
-				<nav
-					className="sticky top-0 z-50 hidden min-h-24 grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-[var(--line)] bg-white px-6 py-0 sm:grid"
-					aria-label="Navegacion principal"
-				>
-					<ul className="flex list-none flex-wrap items-center justify-start gap-5 p-0 text-[11px] font-bold uppercase tracking-[0.1em] text-[#2c2b2a]">
-						{leftMenu.map((item) => (
-							<li key={item}>
-								<a href="#" className="transition-opacity hover:opacity-75">
-									{item}
-								</a>
-							</li>
-						))}
-					</ul>
-
-					<a
-						className="grid justify-items-center gap-1 leading-none"
-						href="#"
-						aria-label="Viajando Juntos home"
-					>
-						<span
-							className="font-[var(--font-playfair)] text-[14px] tracking-[0.2em] text-[var(--primary)]"
-							aria-hidden
-						>
-							+ +
-						</span>
-						<span className="text-[27px] font-extrabold tracking-[0.28em]">
+						<span className="text-[20px] font-extrabold tracking-[0.3em] text-[var(--secondary)]">
 							VIAJANDO JUNTOS
 						</span>
+						<span className="mt-1 font-[var(--font-playfair)] text-[9px] uppercase tracking-[0.5em] text-[var(--primary)]">
+							Vacaciones de Lujo
+						</span>
 					</a>
 
-					<ul className="flex list-none flex-wrap items-center justify-end gap-5 p-0 text-[11px] font-bold uppercase tracking-[0.1em] text-[#2c2b2a]">
-						{rightMenu.map((item) => (
-							<li key={item}>
-								<a href="#" className="transition-opacity hover:opacity-75">
-									{item}
-								</a>
-							</li>
-						))}
-						<li className="ml-2 inline-flex items-center justify-center gap-2">
-							<a
-								href="#"
-								className="inline-flex min-h-9 items-center justify-center overflow-hidden rounded-full border border-[rgba(17,17,17,0.24)] bg-[#f3f3f3] px-4 text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#1f1f1f] transition hover:-translate-y-px hover:bg-white hover:shadow-[0_10px_20px_rgba(28,24,18,0.16)]"
+					<div className="flex items-center gap-6">
+						<ul className="hidden list-none items-center gap-6 p-0 text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--secondary)] lg:flex">
+							{rightMenu.map((item) => (
+								<li key={item}>
+									<a href="#" className="relative group overflow-hidden py-1">
+										{item}
+										<span className="absolute bottom-0 left-0 h-[1.5px] w-full origin-left scale-x-0 bg-[var(--primary)] transition-transform duration-300 group-hover:scale-x-100" />
+									</a>
+								</li>
+							))}
+						</ul>
+						<div className="hidden items-center gap-3 sm:flex">
+							<Link
+								href="/login"
+								className="text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--secondary)] hover:text-[var(--primary)] transition-colors"
 							>
-								Iniciar sesion
-							</a>
-							<a
-								href="#"
-								className="inline-flex min-h-9 items-center justify-center overflow-hidden rounded-full border border-[var(--accent)] bg-[var(--accent)] px-4 text-[11px] font-extrabold uppercase tracking-[0.08em] text-white transition hover:-translate-y-px hover:bg-[#ff5e4d] hover:shadow-[0_10px_20px_rgba(28,24,18,0.16)]"
+								Iniciar sesión
+							</Link>
+							<Link
+								href="/register"
+								className="rounded-full bg-[var(--accent)] px-6 py-2.5 text-[10px] font-bold uppercase tracking-[0.15em] !text-white shadow-lg transition hover:bg-[#ff8c3b] hover:-translate-y-px active:translate-y-0"
 							>
-								Registro
-							</a>
-						</li>
-					</ul>
+								Registrarse
+							</Link>
+						</div>
+						<button 
+							className="lg:hidden" 
+							onClick={() => setIsMobileMenuOpen(true)}
+							aria-label="Menu"
+						>
+							<Menu size={24} />
+						</button>
+					</div>
 				</nav>
 
+				<AnimatePresence>
+					{isMobileMenuOpen && (
+						<motion.div
+							initial={{ opacity: 0, x: "100%" }}
+							animate={{ opacity: 1, x: 0 }}
+							exit={{ opacity: 0, x: "100%" }}
+							transition={{ type: "spring", damping: 25, stiffness: 200 }}
+							className="fixed inset-0 z-[100] bg-white p-8 lg:hidden"
+						>
+							<div className="flex justify-between items-center mb-12">
+								<span className="text-[16px] font-bold tracking-[0.2em]">MENU</span>
+								<button onClick={() => setIsMobileMenuOpen(false)}>
+									<X size={28} />
+								</button>
+							</div>
+							<ul className="grid gap-6 list-none p-0 text-[24px] font-[var(--font-playfair)] text-[var(--secondary)]">
+								{[...leftMenu, ...rightMenu].map((item) => (
+									<li key={`mobile-${item}`}>
+										<a href="#" onClick={() => setIsMobileMenuOpen(false)}>
+											{item}
+										</a>
+									</li>
+								))}
+							</ul>
+							<div className="mt-12 grid gap-4">
+								<Link
+									href="/login"
+									className="flex h-14 items-center justify-center rounded-xl border border-[var(--line)] text-[14px] font-bold uppercase tracking-[0.1em]"
+									onClick={() => setIsMobileMenuOpen(false)}
+								>
+									Iniciar sesión
+								</Link>
+								<Link
+									href="/register"
+									className="flex h-14 items-center justify-center rounded-xl bg-[var(--accent)] text-[14px] font-bold uppercase tracking-[0.1em] !text-white shadow-md"
+									onClick={() => setIsMobileMenuOpen(false)}
+								>
+									Registrarse
+								</Link>
+							</div>
+						</motion.div>
+					)}
+				</AnimatePresence>
+
 				<section
-					className="relative isolate overflow-hidden bg-[linear-gradient(180deg,rgba(0,0,0,0.46),rgba(0,0,0,0.62)),url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=2200&q=80')] bg-cover bg-center px-3 pb-8 pt-7 before:absolute before:inset-0 before:-z-10 before:bg-[linear-gradient(180deg,rgba(0,0,0,0.28),rgba(0,0,0,0.55))] sm:min-h-[540px] sm:px-6 sm:pb-[118px] sm:pt-12"
-					aria-label="Vacaciones elegantes"
+					className="relative isolate flex min-h-[90vh] flex-col justify-center overflow-hidden px-6 py-20 sm:px-12"
+					aria-label="Hero"
 				>
-					<div className="mx-auto inline-flex rounded-full border border-[rgba(255,111,97,0.56)] bg-[rgba(255,111,97,0.26)] px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#fdfaf5]">
-						Coleccion 2026
+					<motion.div 
+						initial={{ scale: 1.1 }}
+						animate={{ scale: 1 }}
+						transition={{ duration: 10, ease: "easeOut" }}
+						className="absolute inset-0 -z-10"
+					>
+						<div className="absolute inset-0 bg-black/40 z-10" />
+						<img 
+							src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=2200&q=80" 
+							alt="Beach Resort"
+							className="h-full w-full object-cover"
+						/>
+					</motion.div>
+
+					<div className="absolute left-12 top-12 hidden lg:block">
+						<motion.div 
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							className="rounded-full border border-white/30 bg-white/10 px-5 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white backdrop-blur-md"
+						>
+							Colección 2026
+						</motion.div>
 					</div>
-					<div className="mx-auto mt-8 max-w-[900px] text-center text-white sm:mt-[clamp(48px,10vh,114px)]">
-						<h1 className="m-0 grid font-[var(--font-caveat)] text-[clamp(40px,8.2vw,132px)] leading-[0.86] uppercase [text-shadow:0_14px_28px_rgba(0,0,0,0.33)]">
-							<span>Vacaciones</span>
-							<span>Extraordinarias</span>
-						</h1>
-						<p className="mx-auto mt-3 max-w-[700px] font-[var(--font-playfair)] text-[clamp(18px,2vw,38px)] text-[rgba(255,255,255,0.92)]">
-							Disenamos viajes elegantes con experiencias memorables.
-						</p>
-						<div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+
+					<div className="mx-auto max-w-[1000px] text-center text-white">
+						<motion.h1 
+							initial={{ opacity: 0, y: 30 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ delay: 0.2 }}
+							className="m-0 font-[var(--font-playfair)] text-[clamp(48px,10vw,140px)] leading-[0.85] tracking-tight uppercase"
+						>
+							Vacaciones <br />
+							<span className="italic font-normal lowercase">Extraordinarias</span>
+						</motion.h1>
+						<motion.p 
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ delay: 0.4 }}
+							className="mx-auto mt-8 max-w-[600px] text-[clamp(16px,2vw,24px)] font-light leading-relaxed text-white/90"
+						>
+							Experiencias de viaje de lujo curadas para el explorador exigente.
+						</motion.p>
+						<motion.div 
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ delay: 0.6 }}
+							className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6"
+						>
 							<a
 								href="#reserva"
-								className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[var(--accent)] px-8 text-[12px] font-extrabold uppercase tracking-[0.08em] text-white shadow-[0_14px_28px_rgba(180,58,44,0.3)] transition hover:-translate-y-px"
+								className="group inline-flex min-h-[64px] items-center justify-center gap-3 rounded-full bg-[var(--accent)] px-10 text-[12px] font-bold uppercase tracking-[0.2em] text-white shadow-2xl transition hover:bg-[#ff8c3b] hover:-translate-y-1 active:translate-y-0"
 							>
-								Planear ahora
+								Explorar ahora <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
 							</a>
 							<button
 								type="button"
-								className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[rgba(0,166,118,0.72)] bg-[rgba(0,166,118,0.36)] px-8 text-[12px] font-extrabold uppercase tracking-[0.08em] text-white backdrop-blur transition hover:-translate-y-px"
+								className="inline-flex min-h-[64px] items-center justify-center rounded-full border border-white/50 bg-white/5 px-10 text-[12px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur-xl transition hover:bg-white/15 hover:-translate-y-1"
 							>
-								Ver catalogo
+								Ver catálogo
 							</button>
-						</div>
+						</motion.div>
 					</div>
 
-					<div
-						className="mt-5 grid grid-cols-1 gap-2 sm:absolute sm:bottom-6 sm:left-6 sm:right-6 sm:grid-cols-3 sm:gap-3"
-						aria-label="Indicadores de servicio"
-					>
-						<article className="rounded-[18px] border border-[rgba(255,255,255,0.24)] bg-[rgba(255,255,255,0.16)] px-3 py-3 text-[#f8f4ed] backdrop-blur sm:px-4 sm:py-3.5">
-							<strong className="block text-[23px] leading-none sm:text-[28px]">12+</strong>
-							<span className="mt-1.5 block text-[13px] text-[rgba(255,251,244,0.86)]">
-								Anios creando escapadas premium
+					<div className="mt-24 grid grid-cols-1 gap-12 sm:grid-cols-3 lg:mt-32">
+						<motion.article 
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ delay: 0.8 }}
+							className="text-center text-white"
+						>
+							<strong className="block font-[var(--font-playfair)] text-[clamp(44px,5vw,72px)] leading-none">
+								<Counter end={12} />+
+							</strong>
+							<span className="mt-3 block text-[11px] font-bold uppercase tracking-[0.3em] text-white/60">
+								Años de Lujo
 							</span>
-						</article>
-						<article className="rounded-[18px] border border-[rgba(255,255,255,0.24)] bg-[rgba(255,255,255,0.16)] px-3 py-3 text-[#f8f4ed] backdrop-blur sm:px-4 sm:py-3.5">
-							<strong className="block text-[23px] leading-none sm:text-[28px]">4.9/5</strong>
-							<span className="mt-1.5 block text-[13px] text-[rgba(255,251,244,0.86)]">
-								Satisfaccion promedio de viajeros
+						</motion.article>
+						<motion.article 
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ delay: 1 }}
+							className="text-center text-white"
+						>
+							<strong className="block font-[var(--font-playfair)] text-[clamp(44px,5vw,72px)] leading-none text-[var(--accent)]">
+								<Counter end={4.9} decimals={1} />
+							</strong>
+							<span className="mt-3 block text-[11px] font-bold uppercase tracking-[0.3em] text-white/60">
+								Calificación
 							</span>
-						</article>
-						<article className="rounded-[18px] border border-[rgba(255,255,255,0.24)] bg-[rgba(255,255,255,0.16)] px-3 py-3 text-[#f8f4ed] backdrop-blur sm:px-4 sm:py-3.5">
-							<strong className="block text-[23px] leading-none sm:text-[28px]">40</strong>
-							<span className="mt-1.5 block text-[13px] text-[rgba(255,251,244,0.86)]">
-								Destinos internacionales curados
+						</motion.article>
+						<motion.article 
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ delay: 1.2 }}
+							className="text-center text-white"
+						>
+							<strong className="block font-[var(--font-playfair)] text-[clamp(44px,5vw,72px)] leading-none">
+								<Counter end={40} />
+							</strong>
+							<span className="mt-3 block text-[11px] font-bold uppercase tracking-[0.3em] text-white/60">
+								Destinos Globales
 							</span>
-						</article>
+						</motion.article>
 					</div>
 				</section>
 
-				<section className="px-0 pt-[clamp(56px,7vw,92px)]" aria-label="Destinos destacados">
-					<div className="text-center">
-						<p className="m-0 text-[11px] font-bold uppercase tracking-[0.3em] text-[var(--secondary)]">
-							Destinos exclusivos
-						</p>
-						<h2 className="mx-auto mt-[18px] max-w-[880px] font-[var(--font-playfair)] text-[clamp(36px,4.2vw,60px)] leading-none tracking-[-0.02em]">
-							Escoge la atmosfera ideal para tus proximas vacaciones
-						</h2>
-					</div>
-
-					<div className="mt-8 grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
-						{destinationCards.map((destination) => (
-							<article
-								className="overflow-hidden rounded-3xl border border-[rgba(255,255,255,0.72)] bg-[var(--panel)] shadow-[var(--shadow-md)]"
-								key={destination.name}
+				<section className="bg-white py-24 sm:py-32" aria-label="Why choose us">
+					<div className="mx-auto max-w-[1200px] px-6">
+						<div className="text-center mb-16">
+							<motion.p 
+								initial={{ opacity: 0, y: 10 }}
+								whileInView={{ opacity: 1, y: 0 }}
+								viewport={{ once: true }}
+								className="text-[11px] font-bold uppercase tracking-[0.3em] text-[var(--primary)]"
 							>
-								<div
-									className="min-h-[220px] bg-cover bg-center sm:min-h-[250px] lg:min-h-[280px]"
-									style={{ backgroundImage: `url(${destination.image})` }}
-								/>
-								<div className="p-[18px]">
-									<p className="m-0 text-[11px] uppercase tracking-[0.12em] text-[#4d5b55]">
-										{destination.subtitle}
-									</p>
-									<h3 className="mt-2.5 font-[var(--font-playfair)] text-[28px] leading-none">
-										{destination.name}
-									</h3>
-									<div className="mt-3.5 flex flex-wrap gap-2">
-										<span className="rounded-full bg-[var(--neutral)] px-2.5 py-2 text-[12px] text-[#1a6d59]">
-											{destination.nights}
-										</span>
-										<span className="rounded-full bg-[var(--neutral)] px-2.5 py-2 text-[12px] text-[#1a6d59]">
-											Calificacion {destination.rating}
-										</span>
+								La Experiencia
+							</motion.p>
+							<motion.h2 
+								initial={{ opacity: 0, y: 20 }}
+								whileInView={{ opacity: 1, y: 0 }}
+								viewport={{ once: true }}
+								transition={{ delay: 0.1 }}
+								className="mt-4 font-[var(--font-playfair)] text-[clamp(32px,4vw,56px)] leading-tight"
+							>
+								¿Por qué viajar con nosotros?
+							</motion.h2>
+						</div>
+
+						<div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
+							{[
+								{ icon: Plane, title: "Vuelos Curados", desc: "Arreglos de primera clase con las aerolíneas líderes del mundo." },
+								{ icon: ShieldCheck, title: "Seguridad Total", desc: "Seguro de viaje premium y soporte concierge 24/7." },
+								{ icon: Star, title: "Acceso Élite", desc: "Entrada exclusiva a eventos privados y tesoros ocultos." },
+								{ icon: Map, title: "Rutas a Medida", desc: "Itinerarios construidos según sus preferencias únicas." }
+							].map((feature, idx) => (
+								<motion.div 
+									key={feature.title}
+									initial={{ opacity: 0, y: 20 }}
+									whileInView={{ opacity: 1, y: 0 }}
+									viewport={{ once: true }}
+									transition={{ delay: idx * 0.1 }}
+									className="group text-center"
+								>
+									<div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--neutral)] text-[var(--primary)] transition-transform duration-300 group-hover:-translate-y-2 group-hover:bg-[var(--primary)] group-hover:text-white">
+										<feature.icon size={32} />
 									</div>
-								</div>
-							</article>
-						))}
+									<h3 className="text-[18px] font-bold text-[var(--secondary)]">{feature.title}</h3>
+									<p className="mt-3 text-[15px] leading-relaxed text-[var(--muted)]">{feature.desc}</p>
+								</motion.div>
+							))}
+						</div>
+					</div>
+				</section>
+
+				<section className="bg-[var(--paper)] py-24 sm:py-32" aria-label="Destinations">
+					<div className="mx-auto max-w-[1200px] px-6">
+						<div className="flex flex-col items-end justify-between gap-6 sm:flex-row mb-16">
+							<div className="max-w-[600px]">
+								<p className="text-[11px] font-bold uppercase tracking-[0.3em] text-[var(--primary)]">
+									Vacaciones Curadas
+								</p>
+								<h2 className="mt-4 font-[var(--font-playfair)] text-[clamp(32px,4vw,56px)] leading-tight">
+									Destinos Destacados
+								</h2>
+							</div>
+							<a href="#" className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--secondary)] hover:text-[var(--primary)] transition-colors">
+								Ver todos los destinos <ArrowRight size={14} />
+							</a>
+						</div>
+
+						<div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+							{destinationCards.map((destination, idx) => (
+								<motion.article
+									key={destination.name}
+									initial={{ opacity: 0, y: 30 }}
+									whileInView={{ opacity: 1, y: 0 }}
+									viewport={{ once: true }}
+									transition={{ delay: idx * 0.1 }}
+									className="group relative overflow-hidden rounded-[32px] bg-white shadow-sm transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
+								>
+									<div className="aspect-[4/5] overflow-hidden">
+										<img 
+											src={destination.image} 
+											alt={destination.name}
+											className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+										/>
+										<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 transition-opacity group-hover:opacity-80" />
+									</div>
+									<div className="absolute bottom-0 left-0 w-full p-8 text-white">
+										<p className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/70">
+											{destination.subtitle === "Italy" ? "Italia" : 
+											 destination.subtitle === "Polynesia" ? "Polinesia" : 
+											 destination.subtitle === "Greece" ? "Grecia" : destination.subtitle}
+										</p>
+										<h3 className="mt-2 font-[var(--font-playfair)] text-[28px] leading-tight">
+											{destination.name}
+										</h3>
+										<div className="mt-6 flex items-center justify-between border-t border-white/20 pt-6 opacity-0 translate-y-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+											<span className="text-[12px] font-medium tracking-wide">{destination.nights.replace("nights", "noches")}</span>
+											<span className="flex items-center gap-1 text-[12px] font-bold">
+												<Star size={12} className="fill-[var(--accent)] text-[var(--accent)]" /> {destination.rating}
+											</span>
+										</div>
+									</div>
+								</motion.article>
+							))}
+						</div>
+					</div>
+				</section>
+
+				<section className="bg-white py-24 sm:py-32" aria-label="Testimonials">
+					<div className="mx-auto max-w-[1000px] px-6 text-center">
+						<Star size={40} className="mx-auto mb-8 text-[var(--accent)] fill-[var(--accent)]" />
+						<h2 className="font-[var(--font-playfair)] text-[clamp(28px,3.5vw,48px)] leading-relaxed italic">
+							"Un viaje inolvidable. Cada detalle fue manejado con tanto cuidado y sofisticación. No podríamos haber pedido una mejor experiencia."
+						</h2>
+						<div className="mt-12 flex flex-col items-center">
+							<div className="h-16 w-16 overflow-hidden rounded-full border-2 border-[var(--primary)] p-1">
+								<img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80" alt="Client" className="h-full w-full rounded-full object-cover" />
+							</div>
+							<p className="mt-4 text-[16px] font-bold text-[var(--secondary)]">Sophia Henderson</p>
+							<p className="text-[12px] uppercase tracking-[0.2em] text-[var(--muted)]">Miembro Platinum</p>
+						</div>
 					</div>
 				</section>
 
 				<section
-					className="mt-[clamp(58px,7vw,98px)] grid grid-cols-1 items-center gap-6 rounded-[26px] border border-[rgba(0,166,118,0.28)] bg-[linear-gradient(135deg,rgba(231,253,245,0.9),rgba(219,250,240,0.88)),#e7fbf4] p-6 shadow-[var(--shadow-lg)] md:grid-cols-[minmax(260px,1fr)_minmax(300px,430px)] md:p-[30px]"
+					className="relative isolate overflow-hidden bg-[var(--secondary)] py-24 sm:py-32"
 					id="reserva"
-					aria-label="Solicitud de viaje"
+					aria-label="Booking"
 				>
-					<div>
-						<p className="m-0 text-[11px] font-bold uppercase tracking-[0.3em] text-[var(--secondary)]">
-							Planificacion concierge
-						</p>
-						<h2 className="mt-4 font-[var(--font-playfair)] text-[clamp(28px,4vw,56px)] leading-[0.98]">
-							Construyamos tus vacaciones ideales
-						</h2>
-						<p className="mt-3.5 max-w-[580px] leading-[1.8] text-[#2a6956]">
-							Comparte tus fechas y estilo de viaje. En menos de 24 horas te
-							enviaremos una propuesta personalizada.
-						</p>
+					<div className="absolute inset-0 -z-10 opacity-20">
+						<img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=2000&q=80" alt="Background" className="h-full w-full object-cover" />
 					</div>
-					<form className="grid gap-2">
-						<label
-							htmlFor="destino"
-							className="text-[12px] font-bold uppercase tracking-[0.1em] text-[#1d8f6a]"
-						>
-							Destino deseado
-						</label>
-						<input
-							id="destino"
-							placeholder="Ej. Riviera Maya"
-							className="min-h-12 rounded-xl border border-[rgba(0,166,118,0.3)] bg-[#fcfffd] px-3.5 text-[#1a1a1a] placeholder:text-[#76a395]"
-						/>
+					
+					<div className="mx-auto max-w-[1200px] px-6">
+						<div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
+							<div className="text-white">
+								<p className="text-[11px] font-bold uppercase tracking-[0.3em] text-[var(--accent)]">
+									Planificación Concierge
+								</p>
+								<h2 className="mt-6 font-[var(--font-playfair)] text-[clamp(36px,5vw,64px)] leading-tight">
+									¿Listo para su próxima <br />
+									<span className="italic font-normal">obra maestra?</span>
+								</h2>
+								<div className="mt-10 space-y-4">
+									{[
+										"Consulta personalizada 1 a 1",
+										"Conocimiento local experto",
+										"Planificación logística sin estrés"
+									].map((item) => (
+										<div key={item} className="flex items-center gap-3 text-white/80">
+											<CheckCircle2 size={18} className="text-[var(--primary)]" />
+											<span className="text-[15px]">{item}</span>
+										</div>
+									))}
+								</div>
+							</div>
 
-						<label
-							htmlFor="fecha"
-							className="text-[12px] font-bold uppercase tracking-[0.1em] text-[#1d8f6a]"
-						>
-							Fecha aproximada
-						</label>
-						<input
-							id="fecha"
-							placeholder="Mes y ano"
-							className="min-h-12 rounded-xl border border-[rgba(0,166,118,0.3)] bg-[#fcfffd] px-3.5 text-[#1a1a1a] placeholder:text-[#76a395]"
-						/>
-
-						<button
-							type="submit"
-							className="mt-2 inline-flex min-h-[50px] items-center justify-center rounded-full bg-[var(--primary)] px-6 text-[12px] font-extrabold uppercase tracking-[0.1em] text-white transition hover:-translate-y-px"
-						>
-							Solicitar propuesta
-						</button>
-					</form>
+							<motion.div 
+								initial={{ opacity: 0, scale: 0.95 }}
+								whileInView={{ opacity: 1, scale: 1 }}
+								viewport={{ once: true }}
+								className="rounded-[40px] bg-white p-8 shadow-2xl sm:p-12"
+							>
+								<form className="grid gap-6">
+									<div className="grid gap-2">
+										<label className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Destino Deseado</label>
+										<div className="relative">
+											<Map className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted)]" size={18} />
+											<input 
+												placeholder="ej. Costa Amalfitana, Italia"
+												className="h-14 w-full rounded-2xl border border-[var(--line)] bg-[var(--paper)] pl-12 pr-4 text-[15px] outline-none transition focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]"
+											/>
+										</div>
+									</div>
+									<div className="grid gap-2">
+										<label className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Fechas de Viaje</label>
+										<div className="relative">
+											<Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted)]" size={18} />
+											<input 
+												placeholder="Mes y Año"
+												className="h-14 w-full rounded-2xl border border-[var(--line)] bg-[var(--paper)] pl-12 pr-4 text-[15px] outline-none transition focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]"
+											/>
+										</div>
+									</div>
+									<button className="h-16 w-full rounded-full bg-[var(--accent)] text-[12px] font-bold uppercase tracking-[0.2em] !text-white shadow-xl transition hover:bg-[#ff8c3b] hover:-translate-y-1">
+										Solicitar Consulta
+									</button>
+								</form>
+							</motion.div>
+						</div>
+					</div>
 				</section>
 
-				<footer
-					className="mt-[22px] rounded-t-[24px] bg-[#0b0b0b] px-5 pb-[18px] pt-6 text-[#efebe4] shadow-[var(--shadow-lg)] sm:px-[30px] sm:pb-[22px] sm:pt-[34px]"
-					aria-label="Pie de pagina"
-				>
-					<div className="grid grid-cols-1 gap-[18px] lg:grid-cols-[1.5fr_repeat(3,minmax(0,1fr))]">
-						<div>
-							<p className="m-0 text-[11px] font-bold uppercase tracking-[0.3em] text-white">
-								Viajando Juntos
-							</p>
-							<h3 className="mt-4 max-w-[370px] font-[var(--font-playfair)] text-[clamp(24px,3.1vw,42px)] leading-[1.02]">
-								Viajes de vacaciones con diseno premium y atencion humana.
-							</h3>
+				<footer className="bg-[#0a192f] py-20 text-white/60">
+					<div className="mx-auto max-w-[1200px] px-6">
+						<div className="grid grid-cols-1 gap-16 lg:grid-cols-2">
+							<div>
+								<span className="text-[20px] font-extrabold tracking-[0.3em] text-white">VIAJANDO JUNTOS</span>
+								<p className="mt-8 max-w-[400px] text-[16px] leading-relaxed">
+									Redefiniendo el arte de viajar a través de experiencias exclusivas y un servicio impecable desde 2014.
+								</p>
+								<div className="mt-10 flex gap-6">
+									<a href="#" className="hover:text-white transition-colors"><Instagram size={20} /></a>
+									<a href="#" className="hover:text-white transition-colors"><Facebook size={20} /></a>
+									<a href="#" className="hover:text-white transition-colors"><Twitter size={20} /></a>
+								</div>
+							</div>
+							<div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
+								<div>
+									<h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">Explorar</h4>
+									<ul className="grid gap-4 list-none p-0 text-[14px]">
+										<li><a href="#" className="hover:text-white transition-colors">Destinos</a></li>
+										<li><a href="#" className="hover:text-white transition-colors">Colecciones</a></li>
+										<li><a href="#" className="hover:text-white transition-colors">Jets Privados</a></li>
+									</ul>
+								</div>
+								<div>
+									<h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">Empresa</h4>
+									<ul className="grid gap-4 list-none p-0 text-[14px]">
+										<li><a href="#" className="hover:text-white transition-colors">Nuestra Historia</a></li>
+										<li><a href="#" className="hover:text-white transition-colors">Concierge</a></li>
+										<li><a href="#" className="hover:text-white transition-colors">Aliados</a></li>
+									</ul>
+								</div>
+								<div className="col-span-2 sm:col-span-1">
+									<h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">Contacto</h4>
+									<ul className="grid gap-4 list-none p-0 text-[14px]">
+										<li className="flex items-center gap-2"><Phone size={14} /> 844 1234567</li>
+										<li>hola@viajandojuntos.com</li>
+										<li>CDMX, México</li>
+									</ul>
+								</div>
+							</div>
 						</div>
-
-						<div>
-							<h4 className="m-0 text-[12px] uppercase tracking-[0.1em] text-white">
-								Empresa
-							</h4>
-							<ul className="mt-3.5 grid list-none gap-2 p-0 text-[14px] text-[rgba(245,250,255,0.9)]">
-								<li>
-									<a href="#">Sobre nosotros</a>
-								</li>
-								<li>
-									<a href="#">Metodo de trabajo</a>
-								</li>
-								<li>
-									<a href="#">Aliados</a>
-								</li>
-							</ul>
-						</div>
-
-						<div>
-							<h4 className="m-0 text-[12px] uppercase tracking-[0.1em] text-white">
-								Explorar
-							</h4>
-							<ul className="mt-3.5 grid list-none gap-2 p-0 text-[14px] text-[rgba(245,250,255,0.9)]">
-								<li>
-									<a href="#">Destinos</a>
-								</li>
-								<li>
-									<a href="#">Paquetes</a>
-								</li>
-								<li>
-									<a href="#reserva">Reserva</a>
-								</li>
-							</ul>
-						</div>
-
-						<div>
-							<h4 className="m-0 text-[12px] uppercase tracking-[0.1em] text-white">
-								Contacto
-							</h4>
-							<ul className="mt-3.5 grid list-none gap-2 p-0 text-[14px] text-[rgba(245,250,255,0.9)]">
-								<li>+52 55 4088 9900</li>
-								<li>hola@viajandojuntos.com</li>
-								<li>CDMX, Mexico</li>
-							</ul>
-						</div>
-					</div>
-
-					<div className="mt-[22px] flex flex-col items-start justify-between gap-3 border-t border-[rgba(255,255,255,0.28)] pt-[18px] sm:flex-row sm:items-center">
-						<p className="m-0 text-[13px] text-[rgba(241,249,255,0.86)]">
-							© 2026 Viajando Juntos. Todos los derechos reservados.
-						</p>
-						<div className="flex gap-3 text-[13px] text-white">
-							<a href="#">Privacidad</a>
-							<a href="#">Terminos</a>
+						<div className="mt-20 flex flex-col items-center justify-between gap-6 border-t border-white/10 pt-10 sm:flex-row">
+							<p className="text-[13px]">© 2026 Viajando Juntos. Todos los derechos reservados.</p>
+							<div className="flex gap-8 text-[13px]">
+								<a href="#" className="hover:text-white transition-colors">Política de Privacidad</a>
+								<a href="#" className="hover:text-white transition-colors">Términos de Servicio</a>
+							</div>
 						</div>
 					</div>
 				</footer>
