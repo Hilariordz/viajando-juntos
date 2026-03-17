@@ -26,7 +26,10 @@ export default function RegistroPage() {
 
         <div className="flex items-center justify-center px-6 py-10 lg:order-1 lg:h-screen lg:px-12 lg:py-0 xl:px-16">
           <div className="w-full max-w-[440px]">
-            <div className="mb-8 lg:hidden">
+            <div className="mb-8 flex items-center gap-3 lg:hidden">
+              <div className="h-10 w-10">
+                <img src="/logo.svg" alt="Logo" className="h-full w-full object-contain" />
+              </div>
               <span className="text-[18px] font-extrabold tracking-[0.2em] text-[var(--secondary)]">
                 VIAJANDO JUNTOS
               </span>

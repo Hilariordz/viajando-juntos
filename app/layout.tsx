@@ -19,8 +19,11 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "Erios Hotels & Resorts",
-  description: "Landing page de hotel y vacaciones para Viajando Juntos.",
+  title: "Viajando Juntos | Vacaciones de Lujo",
+  description: "Experiencias de viaje exclusivas y personalizadas con Viajando Juntos.",
+  icons: {
+    icon: "/logo.svg",
+  },
 };
 
 export default function RootLayout({

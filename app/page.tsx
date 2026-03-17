@@ -119,16 +119,21 @@ export default function Home() {
 					</div>
 
 					<a
-						className="flex flex-col items-center leading-none"
+						className="flex items-center gap-3 leading-none"
 						href="#"
 						aria-label="Viajando Juntos home"
 					>
-						<span className="text-[20px] font-extrabold tracking-[0.3em] text-[var(--secondary)]">
-							VIAJANDO JUNTOS
-						</span>
-						<span className="mt-1 font-[var(--font-playfair)] text-[9px] uppercase tracking-[0.5em] text-[var(--primary)]">
-							Vacaciones de Lujo
-						</span>
+						<div className="h-10 w-10 overflow-hidden">
+							<img src="/logo.svg" alt="Logo" className="h-full w-full object-contain" />
+						</div>
+						<div className="flex flex-col">
+							<span className="text-[18px] font-extrabold tracking-[0.2em] text-[var(--secondary)]">
+								VIAJANDO JUNTOS
+							</span>
+							<span className="mt-0.5 font-[var(--font-playfair)] text-[9px] uppercase tracking-[0.4em] text-[var(--primary)]">
+								Vacaciones de Lujo
+							</span>
+						</div>
 					</a>
 
 					<div className="flex items-center gap-6">
@@ -513,10 +518,15 @@ export default function Home() {
 					<div className="mx-auto max-w-[1200px] px-6">
 						<div className="grid grid-cols-1 gap-16 lg:grid-cols-2">
 							<div>
+							<div className="flex items-center gap-3">
+								<div className="h-10 w-10">
+									<img src="/logo.svg" alt="Logo" className="h-full w-full object-contain" />
+								</div>
 								<span className="text-[20px] font-extrabold tracking-[0.3em] text-white">VIAJANDO JUNTOS</span>
-								<p className="mt-8 max-w-[400px] text-[16px] leading-relaxed">
-									Redefiniendo el arte de viajar a través de experiencias exclusivas y un servicio impecable desde 2014.
-								</p>
+							</div>
+							<p className="mt-8 max-w-[400px] text-[16px] leading-relaxed">
+								Redefiniendo el arte de viajar a través de experiencias exclusivas y un servicio impecable desde 2014.
+							</p>
 								<div className="mt-10 flex gap-6">
 									<a href="#" className="hover:text-white transition-colors"><Instagram size={20} /></a>
 									<a href="#" className="hover:text-white transition-colors"><Facebook size={20} /></a>
