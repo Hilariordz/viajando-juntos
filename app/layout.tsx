@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Caveat, Manrope, Playfair_Display } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -36,6 +37,7 @@ export default function RootLayout({
       <body
         className={`${manrope.variable} ${playfair.variable} ${caveat.variable} antialiased`}
       >
+        <Toaster position="top-center" reverseOrder={false} />
         {children}
       </body>
     </html>

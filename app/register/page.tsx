@@ -1,6 +1,60 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { auth } from "@/lib/firebase";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+import toast from "react-hot-toast";
 
 export default function RegistroPage() {
+  const [nombre, setNombre] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      await updateProfile(user, {
+        displayName: nombre,
+      });
+
+      // 3. Llamar a la función RPC segura para crear el perfil en Supabase
+      const { error: rpcError } = await supabase.rpc('create_user_profile', {
+        uid: user.uid,
+        full_name: nombre,
+        email: email,
+      });
+
+      if (rpcError) {
+        console.error("Error al crear el perfil en Supabase (RPC):", rpcError);
+        toast.error("Cuenta creada, pero hubo un error al configurar tu perfil.");
+      } else {
+        toast.success("¡Cuenta creada con éxito!");
+      }
+
+      router.push("/user");
+    } catch (err: any) {
+      const errorMessage = err.code === 'auth/email-already-in-use' 
+        ? "Este correo ya está registrado." 
+        : err.message;
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[var(--bg)] text-[var(--ink)] lg:h-screen lg:overflow-hidden">
       <section className="grid min-h-screen grid-cols-1 lg:h-screen lg:grid-cols-[1fr_0.88fr] lg:items-center">
@@ -52,7 +106,13 @@ export default function RegistroPage() {
               Regístrate para planificar tus viajes y conectar con otros viajeros.
             </p>
 
-            <form className="mt-10 grid gap-5">
+            {error && (
+              <div className="mt-4 rounded-lg bg-red-50 p-4 text-sm text-red-600">
+                {error}
+              </div>
+            )}
+
+            <form className="mt-10 grid gap-5" onSubmit={handleRegister}>
               <div className="grid gap-2">
                 <label className="text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">
                   Nombre completo
@@ -60,6 +120,9 @@ export default function RegistroPage() {
                 <input
                   type="text"
                   placeholder="Juan Pérez"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                  required
                   className="h-13 rounded-2xl border border-[var(--line)] bg-white px-4 text-[15px] text-[var(--ink)] placeholder:text-[var(--muted)] outline-none transition focus:border-[var(--primary)]"
                 />
               </div>
@@ -71,6 +134,9 @@ export default function RegistroPage() {
                 <input
                   type="email"
                   placeholder="tu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                   className="h-13 rounded-2xl border border-[var(--line)] bg-white px-4 text-[15px] text-[var(--ink)] placeholder:text-[var(--muted)] outline-none transition focus:border-[var(--primary)]"
                 />
               </div>
@@ -82,12 +148,15 @@ export default function RegistroPage() {
                 <input
                   type="password"
                   placeholder="********"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                   className="h-13 rounded-2xl border border-[var(--line)] bg-white px-4 text-[15px] text-[var(--ink)] placeholder:text-[var(--muted)] outline-none transition focus:border-[var(--primary)]"
                 />
               </div>
 
               <div className="mt-1 flex items-start gap-2 text-[13px] text-[var(--muted)]">
-                <input type="checkbox" className="mt-1 h-4 w-4 accent-[var(--primary)] cursor-pointer" />
+                <input type="checkbox" required className="mt-1 h-4 w-4 accent-[var(--primary)] cursor-pointer" />
                 <span className="leading-tight">
                   Acepto los{" "}
                   <Link href="#" className="underline underline-offset-2 hover:text-[var(--ink)]">
@@ -102,9 +171,10 @@ export default function RegistroPage() {
 
               <button
                 type="submit"
-                className="mt-4 inline-flex h-14 items-center justify-center rounded-full bg-[var(--accent)] px-6 text-[12px] font-bold uppercase tracking-[0.2em] !text-white shadow-lg transition hover:bg-[#ff8c3b] hover:-translate-y-px active:translate-y-0"
+                disabled={loading}
+                className="mt-4 inline-flex h-14 items-center justify-center rounded-full bg-[var(--accent)] px-6 text-[12px] font-bold uppercase tracking-[0.2em] !text-white shadow-lg transition hover:bg-[#ff8c3b] hover:-translate-y-px active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Registrarse
+                {loading ? "Registrando..." : "Crear cuenta"}
               </button>
             </form>
 

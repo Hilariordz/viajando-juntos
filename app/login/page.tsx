@@ -1,6 +1,40 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { auth } from "@/lib/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function IniciarSesionPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      toast.success("¡Bienvenido de nuevo!");
+      router.push("/user");
+    } catch (err: any) {
+      let errorMessage = "Credenciales inválidas o error en el servidor.";
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        errorMessage = "Correo o contraseña incorrectos.";
+      }
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[var(--bg)] text-[var(--ink)] lg:h-screen lg:overflow-hidden">
       <section className="grid min-h-screen grid-cols-1 lg:h-screen lg:grid-cols-[1fr_0.88fr] lg:items-center">
@@ -52,7 +86,13 @@ export default function IniciarSesionPage() {
               Accede a tus reservas, itinerarios y experiencias personalizadas.
             </p>
 
-            <form className="mt-10 grid gap-5">
+            {error && (
+              <div className="mt-4 rounded-lg bg-red-50 p-4 text-sm text-red-600">
+                {error}
+              </div>
+            )}
+
+            <form className="mt-10 grid gap-5" onSubmit={handleLogin}>
               <div className="grid gap-2">
                 <label className="text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">
                   Correo electrónico
@@ -60,6 +100,9 @@ export default function IniciarSesionPage() {
                 <input
                   type="email"
                   placeholder="tu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                   className="h-13 rounded-2xl border border-[var(--line)] bg-white px-4 text-[15px] text-[var(--ink)] placeholder:text-[var(--muted)] outline-none transition focus:border-[var(--primary)]"
                 />
               </div>
@@ -71,6 +114,9 @@ export default function IniciarSesionPage() {
                 <input
                   type="password"
                   placeholder="********"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                   className="h-13 rounded-2xl border border-[var(--line)] bg-white px-4 text-[15px] text-[var(--ink)] placeholder:text-[var(--muted)] outline-none transition focus:border-[var(--primary)]"
                 />
               </div>
@@ -87,9 +133,10 @@ export default function IniciarSesionPage() {
 
               <button
                 type="submit"
-                className="mt-4 inline-flex h-14 items-center justify-center rounded-full bg-[var(--accent)] px-6 text-[12px] font-bold uppercase tracking-[0.2em] !text-white shadow-lg transition hover:bg-[#ff8c3b] hover:-translate-y-px active:translate-y-0"
+                disabled={loading}
+                className="mt-4 inline-flex h-14 items-center justify-center rounded-full bg-[var(--accent)] px-6 text-[12px] font-bold uppercase tracking-[0.2em] !text-white shadow-lg transition hover:bg-[#ff8c3b] hover:-translate-y-px active:translate-y-0 disabled:opacity-50"
               >
-                Entrar
+                {loading ? "Entrando..." : "Entrar"}
               </button>
             </form>
 

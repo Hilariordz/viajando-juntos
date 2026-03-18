@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged, User, signOut } from "firebase/auth";
+import { supabase } from "@/lib/supabase";
 import { 
 	Plane, 
 	ShieldCheck, 
@@ -16,7 +19,10 @@ import {
 	Twitter,
 	Menu,
 	X,
-	CheckCircle2
+	CheckCircle2,
+	User as UserIcon,
+	LogOut,
+	Settings
 } from "lucide-react";
 
 function Counter({ end, duration = 2000, decimals = 0 }: { end: number; duration?: number; decimals?: number }) {
@@ -41,44 +47,54 @@ function Counter({ end, duration = 2000, decimals = 0 }: { end: number; duration
 const leftMenu = ["Inicio", "Destinos", "Paquetes"];
 const rightMenu = ["Galeria", "Contacto"];
 
-const destinationCards = [
-	{
-		name: "Costa Amalfitana",
-		subtitle: "Italia",
-		nights: "7 noches",
-		rating: "4.9",
-		image:
-			"https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1200&q=80",
-	},
-	{
-		name: "Bora Bora",
-		subtitle: "Polinesia",
-		nights: "6 noches",
-		rating: "4.8",
-		image:
-			"https://images.unsplash.com/photo-1506953823976-52e1fdc0149a?auto=format&fit=crop&w=1200&q=80",
-	},
-	{
-		name: "Santorini",
-		subtitle: "Grecia",
-		nights: "5 noches",
-		rating: "4.7",
-		image:
-			"https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80",
-	},
-];
-
 export default function Home() {
 	const [isScrolled, setIsScrolled] = useState(false);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+	const [user, setUser] = useState<User | null>(null);
+	const [adminPhotos, setAdminPhotos] = useState<any[]>([]);
+	const [recentComments, setRecentComments] = useState<any[]>([]);
 
 	useEffect(() => {
 		const handleScroll = () => {
 			setIsScrolled(window.scrollY > 20);
 		};
 		window.addEventListener("scroll", handleScroll);
-		return () => window.removeEventListener("scroll", handleScroll);
+
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			setUser(user);
+		});
+
+		fetchSupabaseData();
+
+		return () => {
+			window.removeEventListener("scroll", handleScroll);
+			unsubscribe();
+		};
 	}, []);
+
+	const fetchSupabaseData = async () => {
+		// Fetch admin photos
+		const { data: photosData } = await supabase
+			.from("photos")
+			.select("*")
+			.limit(3)
+			.order("created_at", { ascending: false });
+		
+		if (photosData) setAdminPhotos(photosData);
+
+		// Fetch recent comments
+		const { data: commentsData } = await supabase
+			.from("comments")
+			.select("*, profiles(full_name, avatar_url)")
+			.limit(3)
+			.order("created_at", { ascending: false });
+		
+		if (commentsData) setRecentComments(commentsData);
+	};
+
+	const handleLogout = async () => {
+		await signOut(auth);
+	};
 
 	return (
 		<main className="min-h-screen">
@@ -148,18 +164,39 @@ export default function Home() {
 							))}
 						</ul>
 						<div className="hidden items-center gap-3 sm:flex">
-							<Link
-								href="/login"
-								className="text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--secondary)] hover:text-[var(--primary)] transition-colors"
-							>
-								Iniciar sesión
-							</Link>
-							<Link
-								href="/register"
-								className="rounded-full bg-[var(--accent)] px-6 py-2.5 text-[10px] font-bold uppercase tracking-[0.15em] !text-white shadow-lg transition hover:bg-[#ff8c3b] hover:-translate-y-px active:translate-y-0"
-							>
-								Registrarse
-							</Link>
+							{user ? (
+								<div className="flex items-center gap-4">
+									<Link
+										href="/user"
+										className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--secondary)] hover:text-[var(--primary)] transition-colors"
+									>
+										<UserIcon size={14} />
+										Panel
+									</Link>
+									<button
+										onClick={handleLogout}
+										className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.1em] text-red-500 hover:text-red-600 transition-colors"
+									>
+										<LogOut size={14} />
+										Salir
+									</button>
+								</div>
+							) : (
+								<>
+									<Link
+										href="/login"
+										className="text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--secondary)] hover:text-[var(--primary)] transition-colors"
+									>
+										Iniciar sesión
+									</Link>
+									<Link
+										href="/register"
+										className="rounded-full bg-[var(--accent)] px-6 py-2.5 text-[10px] font-bold uppercase tracking-[0.15em] !text-white shadow-lg transition hover:bg-[#ff8c3b] hover:-translate-y-px active:translate-y-0"
+									>
+										Registrarse
+									</Link>
+								</>
+							)}
 						</div>
 						<button 
 							className="lg:hidden" 
@@ -196,20 +233,43 @@ export default function Home() {
 								))}
 							</ul>
 							<div className="mt-12 grid gap-4">
-								<Link
-									href="/login"
-									className="flex h-14 items-center justify-center rounded-xl border border-[var(--line)] text-[14px] font-bold uppercase tracking-[0.1em]"
-									onClick={() => setIsMobileMenuOpen(false)}
-								>
-									Iniciar sesión
-								</Link>
-								<Link
-									href="/register"
-									className="flex h-14 items-center justify-center rounded-xl bg-[var(--accent)] text-[14px] font-bold uppercase tracking-[0.1em] !text-white shadow-md"
-									onClick={() => setIsMobileMenuOpen(false)}
-								>
-									Registrarse
-								</Link>
+								{user ? (
+									<>
+										<Link
+											href="/user"
+											className="flex h-14 items-center justify-center rounded-xl border border-[var(--line)] text-[14px] font-bold uppercase tracking-[0.1em]"
+											onClick={() => setIsMobileMenuOpen(false)}
+										>
+											Ir al Panel
+										</Link>
+										<button
+											onClick={() => {
+												handleLogout();
+												setIsMobileMenuOpen(false);
+											}}
+											className="flex h-14 items-center justify-center rounded-xl bg-red-50 text-red-600 text-[14px] font-bold uppercase tracking-[0.1em]"
+										>
+											Cerrar sesión
+										</button>
+									</>
+								) : (
+									<>
+										<Link
+											href="/login"
+											className="flex h-14 items-center justify-center rounded-xl border border-[var(--line)] text-[14px] font-bold uppercase tracking-[0.1em]"
+											onClick={() => setIsMobileMenuOpen(false)}
+										>
+											Iniciar sesión
+										</Link>
+										<Link
+											href="/register"
+											className="flex h-14 items-center justify-center rounded-xl bg-[var(--accent)] text-[14px] font-bold uppercase tracking-[0.1em] !text-white shadow-md"
+											onClick={() => setIsMobileMenuOpen(false)}
+										>
+											Registrarse
+										</Link>
+									</>
+								)}
 							</div>
 						</motion.div>
 					)}
@@ -390,41 +450,37 @@ export default function Home() {
 						</div>
 
 						<div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-							{destinationCards.map((destination, idx) => (
-								<motion.article
-									key={destination.name}
-									initial={{ opacity: 0, y: 30 }}
-									whileInView={{ opacity: 1, y: 0 }}
-									viewport={{ once: true }}
-									transition={{ delay: idx * 0.1 }}
-									className="group relative overflow-hidden rounded-[32px] bg-white shadow-sm transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
-								>
-									<div className="aspect-[4/5] overflow-hidden">
-										<img 
-											src={destination.image} 
-											alt={destination.name}
-											className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-										/>
-										<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 transition-opacity group-hover:opacity-80" />
-									</div>
-									<div className="absolute bottom-0 left-0 w-full p-8 text-white">
-										<p className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/70">
-											{destination.subtitle === "Italy" ? "Italia" : 
-											 destination.subtitle === "Polynesia" ? "Polinesia" : 
-											 destination.subtitle === "Greece" ? "Grecia" : destination.subtitle}
-										</p>
-										<h3 className="mt-2 font-[var(--font-playfair)] text-[28px] leading-tight">
-											{destination.name}
-										</h3>
-										<div className="mt-6 flex items-center justify-between border-t border-white/20 pt-6 opacity-0 translate-y-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
-											<span className="text-[12px] font-medium tracking-wide">{destination.nights.replace("nights", "noches")}</span>
-											<span className="flex items-center gap-1 text-[12px] font-bold">
-												<Star size={12} className="fill-[var(--accent)] text-[var(--accent)]" /> {destination.rating}
-											</span>
+							{adminPhotos.length > 0 ? (
+								adminPhotos.map((photo, idx) => (
+									<motion.article
+										key={photo.id}
+										initial={{ opacity: 0, y: 30 }}
+										whileInView={{ opacity: 1, y: 0 }}
+										viewport={{ once: true }}
+										transition={{ delay: idx * 0.1 }}
+										className="group relative overflow-hidden rounded-[32px] bg-white shadow-sm transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
+									>
+										<div className="aspect-[4/5] overflow-hidden">
+											<img 
+												src={photo.url} 
+												alt={photo.description || "Destino"}
+												className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+											/>
+											<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 transition-opacity group-hover:opacity-80" />
 										</div>
-									</div>
-								</motion.article>
-							))}
+										<div className="absolute bottom-0 left-0 w-full p-8 text-white">
+											<p className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/70">
+												Admin Pick
+											</p>
+											<h3 className="mt-2 font-[var(--font-playfair)] text-[28px] leading-tight">
+												{photo.description || "Nuevo Destino"}
+											</h3>
+										</div>
+									</motion.article>
+								))
+							) : (
+								<p className="col-span-full text-center text-[var(--muted)]">Cargando destinos exclusivos...</p>
+							)}
 						</div>
 					</div>
 				</section>
@@ -432,15 +488,38 @@ export default function Home() {
 				<section className="bg-white py-24 sm:py-32" aria-label="Testimonials">
 					<div className="mx-auto max-w-[1000px] px-6 text-center">
 						<Star size={40} className="mx-auto mb-8 text-[var(--accent)] fill-[var(--accent)]" />
-						<h2 className="font-[var(--font-playfair)] text-[clamp(28px,3.5vw,48px)] leading-relaxed italic">
-							"Un viaje inolvidable. Cada detalle fue manejado con tanto cuidado y sofisticación. No podríamos haber pedido una mejor experiencia."
-						</h2>
-						<div className="mt-12 flex flex-col items-center">
-							<div className="h-16 w-16 overflow-hidden rounded-full border-2 border-[var(--primary)] p-1">
-								<img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80" alt="Client" className="h-full w-full rounded-full object-cover" />
-							</div>
-							<p className="mt-4 text-[16px] font-bold text-[var(--secondary)]">Sophia Henderson</p>
-							<p className="text-[12px] uppercase tracking-[0.2em] text-[var(--muted)]">Miembro Platinum</p>
+						
+						<div className="relative h-[200px]">
+							<AnimatePresence mode="wait">
+								{recentComments.length > 0 ? (
+									recentComments.map((comment, idx) => (
+										<motion.div
+											key={comment.id}
+											initial={{ opacity: 0, y: 20 }}
+											animate={{ opacity: 1, y: 0 }}
+											exit={{ opacity: 0, y: -20 }}
+											className="absolute inset-0 flex flex-col items-center"
+										>
+											<h2 className="font-[var(--font-playfair)] text-[clamp(24px,3vw,36px)] leading-relaxed italic">
+												"{comment.content}"
+											</h2>
+											<div className="mt-8 flex flex-col items-center">
+												<div className="h-16 w-16 overflow-hidden rounded-full border-2 border-[var(--primary)] p-1">
+													<img 
+														src={comment.profiles?.avatar_url || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80"} 
+														alt={comment.profiles?.full_name} 
+														className="h-full w-full rounded-full object-cover" 
+													/>
+												</div>
+												<p className="mt-4 text-[16px] font-bold text-[var(--secondary)]">{comment.profiles?.full_name || "Viajero Anónimo"}</p>
+												<p className="text-[12px] uppercase tracking-[0.2em] text-[var(--muted)]">Explorador</p>
+											</div>
+										</motion.div>
+									)).slice(0, 1) // Por ahora solo mostramos el más reciente
+								) : (
+									<p className="text-[var(--muted)]">Cargando testimonios de nuestra comunidad...</p>
+								)}
+							</AnimatePresence>
 						</div>
 					</div>
 				</section>
